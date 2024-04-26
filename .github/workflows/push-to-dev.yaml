@@ -51,6 +51,16 @@ jobs:
           build-args: |
             "DB_URL=${{ secrets.DEV_DB_URL }}"
 
+      - name: SSH into server and run command
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USERNAME }}
+          key: ${{ secrets.STAGING_PRIVATE_KEY }}
+          port: ${{ secrets.STAGING_PORT }}
+          script: |
+            sudo ~/update_backend.sh ${{ github.run_number }}
+
 
       # - name: Send custom JSON data to Slack workflow
       #   id: slack-result
