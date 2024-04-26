@@ -52,3 +52,9 @@ class Car(BaseModel) :
     class Config :
         orm_mode = True
         
+class CarSellOffer(BaseModel) :
+    id : int | None = None
+    car_id : int
+    offer_price : float
+    status : str | None = "pending"
+    buyer_id : int | None = None

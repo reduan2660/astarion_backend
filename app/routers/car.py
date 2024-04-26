@@ -2,7 +2,7 @@ from fastapi import HTTPException, Depends, APIRouter, Query
 from fastapi.params import Body
 from ..database import get_db
 from sqlalchemy.orm import Session
-from ..schemas import User, ResponseUser, Car
+from ..schemas import User, ResponseUser, Car, CarSellOffer
 from passlib.context import CryptContext
 from typing import List
 from .. import models, oauth2, utils
@@ -34,12 +34,24 @@ def get_mycars(db : Session = Depends(get_db), user : User = Depends(oauth2.get_
     cars = db.query(models.Car).filter(models.Car.owner_id == user.id).all()
     return cars
 
+@router.post("/buyer/offer", status_code = 201)
+def create_offer(offer : CarSellOffer, db : Session = Depends(get_db), user : User = Depends(oauth2.get_current_user)) :
+    car = db.query(models.Car).filter(models.Car.id == offer.car_id).first()
+    # if car.owner_id == user.id :
+    #     raise HTTPException(status_code=400, detail="You can't make an offer on your own car")
+    new_offer = models.CarSellOffer(**offer.dict())
+    new_offer.buyer_id = user.id
+    db.add(new_offer)
+    db.commit()
+    db.refresh(new_offer)
+    return new_offer
 
 
 
-
-
-
+@router.get("/offer/{car_id}", status_code = 200)
+def get_my_car_offers(car_id : int, db : Session = Depends(get_db), user : User = Depends(oauth2.get_current_user)) :
+    offers = db.query(models.CarSellOffer).filter(models.CarSellOffer.car_id == car_id).all()
+    return offers
 
 
 

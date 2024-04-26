@@ -31,3 +31,13 @@ class Car(Base) :
     owner_id = Column(Integer, ForeignKey("users.id"))  
     sold = Column(Boolean, nullable = False, default=False)
     owner = relationship("User")
+
+class CarSellOffer(Base) :
+    __tablename__ = "car_sell_offers"
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    car_id = Column(Integer, ForeignKey("cars.id"))
+    offer_price = Column(Float, nullable = False)
+    buyer_id = Column(Integer, ForeignKey("users.id"))
+    status = Column(String, nullable = False, default="pending")
+    car = relationship("Car")
+    buyer = relationship("User")
