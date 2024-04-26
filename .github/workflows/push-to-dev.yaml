@@ -3,7 +3,7 @@ name: Build, Deploy to DockerHub and Update to deployment repository
 on:
   push:
     branches:
-      - develop
+      - dev
 
 jobs:
   buildAndPush:
