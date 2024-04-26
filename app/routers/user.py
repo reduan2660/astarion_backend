@@ -6,11 +6,19 @@ from ..schemas import User, ResponseUser, UpdateUser, Token
 from passlib.context import CryptContext
 from typing import List
 from .. import models, oauth2, utils
+import logging
+
+logging.basicConfig(
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    level=logging.INFO 
+)
+
 
 router = APIRouter()
 
 @router.get("/")
 def home():
+    logging.info("GET request at '/'")
     return {"ping": "pong"}
 
 @router.post("/users", status_code = 201, tags=['users'])
@@ -24,11 +32,15 @@ def create_user(user : User ,db : Session = Depends(get_db)) :
     db.commit()
     db.refresh(new_user)
     access_token = oauth2.create_access_token({ "id": new_user.id, "email": new_user.email })
+    logging.info("POST request at '/users'")
+    logging.info("USER created successfully")
+    
     return {"access_token": access_token, "token_type": "Bearer", "id" : new_user.id, "role" : new_user.role }
 
 @router.get("/users", response_model=List[ResponseUser], tags=['users'])
 def get_users(db: Session = Depends(get_db)):
     users = db.query(models.User).all()
+    logging.info("GET request at '/users'")
     return users
 
 
@@ -46,4 +58,6 @@ def delete_user(id: int, db: Session = Depends(get_db)):
 def get_info(db: Session = Depends(get_db), user = Depends(oauth2.get_current_user)):
     user_from_db = db.query(models.User).filter(models.User.id == user.id).first()
     user_from_db.age = utils.calculate_age(user_from_db.dob)
+    logging.info("GET request at '/profile'")
+    
     return user_from_db

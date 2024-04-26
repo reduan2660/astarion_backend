@@ -4,7 +4,7 @@ import pytest
 from fastapi import status
 from dotenv import load_dotenv
 import os 
-from app.main import app
+from ..main import app
 
 load_dotenv()
 
@@ -29,11 +29,7 @@ client = TestClient(app)
         (f"{ENDPOINT}/cars/buyer/offer", "GET"),
         (f"{ENDPOINT}/cars/offer/1", "POST"),
         (f"{ENDPOINT}/cars/offer/1", "PUT"),
-        (f"{ENDPOINT}/cars/offer/1/buyer", "POST"),
-        
-        
-        
-        
+        (f"{ENDPOINT}/cars/offer/1/buyer", "POST"),    
         
     ],
 )

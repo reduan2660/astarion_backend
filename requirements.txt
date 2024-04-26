@@ -8,3 +8,4 @@ psycopg2
 passlib
 python-dotenv
 pytest
+python-multipart
