@@ -47,7 +47,7 @@ jobs:
         with:
           context: ./
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/$BACKEND_IMAGE:${{ github.sha }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.BACKEND_IMAGE }}:${{ github.sha }}
 
 
       # - name: Send custom JSON data to Slack workflow
