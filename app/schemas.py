@@ -57,4 +57,5 @@ class CarSellOffer(BaseModel) :
     car_id : int
     offer_price : float
     status : str | None = "pending"
+    buyer_status : str | None = None
     buyer_id : int | None = None

@@ -39,5 +39,6 @@ class CarSellOffer(Base) :
     offer_price = Column(Float, nullable = False)
     buyer_id = Column(Integer, ForeignKey("users.id"))
     status = Column(String, nullable = False, default="pending")
+    buyer_status = Column(String, nullable = True, default=None)    
     car = relationship("Car")
     buyer = relationship("User")
