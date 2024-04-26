@@ -46,6 +46,10 @@ def create_offer(offer : CarSellOffer, db : Session = Depends(get_db), user : Us
     db.refresh(new_offer)
     return new_offer
 
+@router.get("/buyer/offer", status_code = 200)
+def get_my_offers(db : Session = Depends(get_db), user : User = Depends(oauth2.get_current_user)) :
+    offers = db.query(models.CarSellOffer).filter(models.CarSellOffer.buyer_id == user.id).all()
+    return offers
 
 
 @router.get("/offer/{car_id}", status_code = 200)
@@ -53,15 +57,36 @@ def get_my_car_offers(car_id : int, db : Session = Depends(get_db), user : User 
     offers = db.query(models.CarSellOffer).filter(models.CarSellOffer.car_id == car_id).all()
     return offers
 
+# seller updates offer status
+@router.put("/offer/{offer_id}", status_code = 200)
+def update_offer(offer_id : int, status : str, db : Session = Depends(get_db), user : User = Depends(oauth2.get_current_user)) :
+    offer = db.query(models.CarSellOffer).filter(models.CarSellOffer.id == offer_id).first()
+    if offer.buyer_id != user.id :
+        raise HTTPException(status_code=400, detail="You can't update this offer")
+    offer.status = status
+    db.commit()
+    db.refresh(offer)
+    return offer
 
 
 
+# buyer updates offer status
+@router.put("/offer/{offer_id}/buyer", status_code = 200)
+def update_offer(offer_id : int, status : str, db : Session = Depends(get_db), user : User = Depends(oauth2.get_current_user)) :
+    offer = db.query(models.CarSellOffer).filter(models.CarSellOffer.id == offer_id).first()
+    if offer.buyer_id != user.id :
+        raise HTTPException(status_code=400, detail="You can't update this offer")
+    offer.buyer_status = status
+    if status == "accepted" and offer.status == "accepted":
+        car = db.query(models.Car).filter(models.Car.id == offer.car_id).first()
+        car.sold = True
+        db.commit()
+        db.refresh(car)
+        return {"message" : "sold"}
 
-
-
-
-
-
+    db.commit()
+    db.refresh(offer)
+    return offer
 
 
 
